@@ -27,3 +27,40 @@ function tecdoc_get($params = array())
 
 
 }
+
+
+function tecdoc_get_mfa($id)
+{
+    $params = array();
+    $params['func'] = 1;
+    $params['mfa'] = $id;
+    $data = tecdoc_get($params);
+    return $data;
+}
+
+function tecdoc_get_mod($id)
+{
+    $params = array();
+    $params['func'] = 2;
+    $params['mod'] = $id;
+    $data = tecdoc_get($params);
+    return $data;
+}
+
+function tecdoc_get_typ($id)
+{
+    $params = array();
+    $params['func'] = 12;
+    $params['mod'] = $id;
+    $data = tecdoc_get($params);
+    return $data;
+}
+
+function tecdoc_get_art($id)
+{
+    $params = array();
+    $params['func'] = 20;
+    $params['art'] = $id;
+    $data = tecdoc_get($params);
+    return $data;
+}

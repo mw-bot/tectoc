@@ -3,7 +3,9 @@
 
 if (!defined("TEXDOC_URL")) {
     define("TEXDOC_URL", 'http://steve.gmk.bg/data/');
-
+}
+if (!defined("TEXDOC_LOCAL_IMAGE_CACHE_FOLDER")) {
+    define("TEXDOC_LOCAL_IMAGE_CACHE", media_base_path() . 'tecdoc/single/');
 }
 
 
@@ -93,6 +95,70 @@ function tecdoc_find_art($kw)
 
 
     return $data;
+}
+
+function tecdoc_get_art_image_remote($id)
+{
+    return api_url('tecdoc_get_art_image_remote_url?id=' . $id);
+}
+
+function tecdoc_get_art_image($id)
+{
+    $img = tecdoc_get_art_images($id);
+    if (!empty($img)) {
+        foreach ($img as $im) {
+            return $im;
+        }
+    }
+}
+
+api_expose('tecdoc_get_art_image_remote_url');
+function tecdoc_get_art_image_remote_url($params)
+{
+    if (isset($params['id'])) {
+        $id = $params['id'];
+        $img = tecdoc_get_art_image($id);
+        if ($img) {
+            $ext = get_file_extension($img);
+            $out = TEXDOC_LOCAL_IMAGE_CACHE . $id . '.' . $ext;
+            if(!is_dir(TEXDOC_LOCAL_IMAGE_CACHE)){
+                mkdir_recursive(TEXDOC_LOCAL_IMAGE_CACHE);
+            }
+
+
+            if (!is_file($out)) {
+                $imageString = file_get_contents($img);
+                $save = file_put_contents($out, $imageString);
+                $name = $out;
+                $fp = fopen($name, 'rb');
+
+                if ($ext == 'jpg') {
+                    header("Content-Type: image/jpg");
+                } elseif ($ext == 'png') {
+                    header("Content-Type: image/png");
+                } else {
+                    header("Content-Type: image/png");
+                }
+
+                header("Content-Length: " . filesize($name));
+
+
+                fpassthru($fp);
+                fclose($fp);
+                exit;
+
+            }
+        }
+
+
+    }
+
+//    $img =  tecdoc_get_art_images($id);
+//    if(!empty($img)){
+//        foreach($img as $im){
+//            return $im;
+//        }
+//    }
 }
 
 function tecdoc_get_art_images($id)
